@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/campaigns")
+@CrossOrigin(origins = "http://localhost:4200") // 👈 Allow Angular dev server
 public class CampaignController {
     private final CampaignService campaignService;
 
