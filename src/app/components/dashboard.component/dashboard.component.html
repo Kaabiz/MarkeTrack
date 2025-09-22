@@ -1,0 +1,7 @@
+<h2>Dashboard works!</h2>
+<p *ngIf="!campaigns.length">No campaigns loaded yet.</p>
+<ul>
+  <li *ngFor="let c of campaigns">
+    {{ c.name }} - {{ c.status }}
+  </li>
+</ul>
