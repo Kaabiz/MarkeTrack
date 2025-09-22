@@ -15,4 +15,6 @@ export class CampaignService {
   getCampaigns(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  
 }
