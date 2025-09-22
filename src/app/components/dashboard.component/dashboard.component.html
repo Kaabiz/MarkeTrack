@@ -1,7 +1,33 @@
+<!-- src/app/components/dashboard/dashboard.component.html -->
 <h2>Dashboard works!</h2>
-<p *ngIf="!campaigns.length">No campaigns loaded yet.</p>
-<ul>
-  <li *ngFor="let c of campaigns">
-    {{ c.campaignName }} - {{ c.campaignStatus }}
-  </li>
-</ul>
+
+<p *ngIf="loading">Loading campaigns…</p>
+<p *ngIf="error">{{ error }}</p>
+<p *ngIf="!loading && !error && !campaigns.length">No campaigns loaded yet.</p>
+
+<table *ngIf="!loading && campaigns.length" border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Objective</th>
+      <th>Status</th>
+      <th>Budget</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Created By</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of campaigns">
+      <td>{{ c.campaignId }}</td>
+      <td><strong>{{ c.campaignName }}</strong></td>
+      <td>{{ c.campaignObjective }}</td>
+      <td>{{ c.campaignStatus }}</td>
+      <td>{{ c.campaignBudget | currency:'USD':'symbol':'1.0-0' }}</td>
+      <td>{{ c.campaignStartDate | date }}</td>
+      <td>{{ c.campaignEndDate | date }}</td>
+      <td>{{ c.createdBy?.userFullName || '—' }}</td>
+    </tr>
+  </tbody>
+</table>

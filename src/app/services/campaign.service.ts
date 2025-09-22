@@ -1,20 +1,17 @@
+// src/app/services/campaign.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
+import { Campaign } from '../models/campaign.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CampaignService {
   private apiUrl = `${environment.apiUrl}/campaigns`;
 
   constructor(private http: HttpClient) {}
 
-  // Fetch all campaigns from backend
-  getCampaigns(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getCampaigns(): Observable<Campaign[]> {
+    return this.http.get<Campaign[]>(this.apiUrl);
   }
-
-  
 }
