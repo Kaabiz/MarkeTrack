@@ -1,0 +1,41 @@
+<div class="campaigns-container">
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon> {{error}}
+  </div>
+  
+  <mat-card *ngFor="let campaign of featuredCampaigns" class="campaign-card" [ngClass]="'status-' + campaign.status.toLowerCase()">
+    <mat-card-header>
+      <mat-card-title>{{ campaign.name }}</mat-card-title>
+      <mat-card-subtitle>
+        <span [class]="'status-badge status-' + campaign.status.toLowerCase()">{{ campaign.status }}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <p>{{ campaign.description }}</p>
+      <div class="campaign-stats">
+        <div class="stat">
+          <mat-icon>monetization_on</mat-icon>
+          <span>${{ campaign.budget | number:'1.0-0' }}</span>
+        </div>
+        <div class="stat">
+          <mat-icon>trending_up</mat-icon>
+          <span>{{ campaign.performance }} Performance</span>
+        </div>
+      </div>
+    </mat-card-content>
+    
+    <mat-card-actions>
+      <button mat-raised-button color="primary">
+        <mat-icon>visibility</mat-icon> View
+      </button>
+      <button mat-stroked-button color="accent">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

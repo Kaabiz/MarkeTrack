@@ -14,4 +14,12 @@ export class CampaignService {
   getCampaigns(): Observable<Campaign[]> {
     return this.http.get<Campaign[]>(this.apiUrl);
   }
+  createCampaign(c: Campaign) { return this.http.post<Campaign>(this.apiUrl, c); }
+
+  updateCampaign(id: number, c: Campaign) { return this.http.put<Campaign>(`${this.apiUrl}/${id}`, c); }
+
+  deleteCampaign(id: number) { return this.http.delete<void>(`${this.apiUrl}/${id}`); }
+
+  getCampaign(id: number) { return this.http.get<Campaign>(`${this.apiUrl}/${id}`); }
+
 }
