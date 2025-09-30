@@ -1,5 +1,105 @@
-<div class="campaigns-container">
-  <!-- Refresh button removed -->
+<div class="campaigns-page">
+  <div class="header">
+    <h1>Campaign Management</h1>
+    <button mat-raised-button color="primary" class="add-button">
+      <mat-icon>add</mat-icon>
+      New Campaign
+    </button>
+  </div>
+  
+  <!-- Enhanced Search & Filter Controls -->
+  <div class="controls-container">
+    <!-- Search with clear button -->
+    <div class="search-container" [class.active]="searchText">
+      <mat-icon>search</mat-icon>
+      <input 
+        type="text" 
+        placeholder="Search campaigns..." 
+        [(ngModel)]="searchText"
+        (keyup)="applyFilter()" 
+        class="search-input"
+      >
+      <button 
+        *ngIf="searchText" 
+        mat-icon-button 
+        class="clear-search" 
+        (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="filter-controls">
+      <!-- Status filter with reset -->
+      <div class="filter-field-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="currentStatusFilter" (selectionChange)="applyStatusFilter()">
+            <mat-option value="all">All Statuses</mat-option>
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="paused">Paused</mat-option>
+            <mat-option value="ended">Ended</mat-option>
+            <mat-option value="draft">Draft</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button 
+          *ngIf="currentStatusFilter !== 'all'" 
+          mat-icon-button 
+          class="reset-filter"
+          (click)="resetStatusFilter()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Sort with reset -->
+      <div class="filter-field-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Sort By</mat-label>
+          <mat-select [(ngModel)]="currentSortBy" (selectionChange)="sortData()">
+            <mat-option value="">No Sorting</mat-option>
+            <mat-option value="name">Name (A-Z)</mat-option>
+            <mat-option value="name_desc">Name (Z-A)</mat-option>
+            <mat-option value="budget">Budget (Low-High)</mat-option>
+            <mat-option value="budget_desc">Budget (High-Low)</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button 
+          *ngIf="currentSortBy" 
+          mat-icon-button 
+          class="reset-filter" 
+          (click)="resetSort()">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Reset all filters button -->
+      <button 
+        mat-stroked-button 
+        class="reset-all-button" 
+        [disabled]="!hasActiveFilters()" 
+        (click)="resetAllFilters()">
+        <mat-icon>restart_alt</mat-icon>
+        Reset
+      </button>
+    </div>
+  </div>
+  
+  <div class="active-filters" *ngIf="hasActiveFilters()">
+    <span class="filter-label">Active filters:</span>
+    <div class="filter-chips">
+      <span class="filter-chip" *ngIf="searchText">
+        Search: "{{searchText}}"
+        <mat-icon (click)="clearSearch()">close</mat-icon>
+      </span>
+      <span class="filter-chip" *ngIf="currentStatusFilter !== 'all'">
+        Status: {{currentStatusFilter | titlecase}}
+        <mat-icon (click)="resetStatusFilter()">close</mat-icon>
+      </span>
+      <span class="filter-chip" *ngIf="currentSortBy">
+        Sort: {{getSortLabel()}}
+        <mat-icon (click)="resetSort()">close</mat-icon>
+      </span>
+    </div>
+  </div>
   
   <div *ngIf="loading" class="loading-container">
     <mat-spinner diameter="40"></mat-spinner>
@@ -9,40 +109,66 @@
     <mat-icon>error</mat-icon> {{error}}
   </div>
   
-  <mat-card *ngFor="let campaign of featuredCampaigns" class="campaign-card" [ngClass]="'status-' + campaign.status.toLowerCase()">
-    <mat-card-header>
-      <mat-card-title>{{ campaign.name }}</mat-card-title>
-      <mat-card-subtitle>
-        <span [class]="'status-badge status-' + campaign.status.toLowerCase()">{{ campaign.status }}</span>
-      </mat-card-subtitle>
-    </mat-card-header>
-    
-    <mat-card-content>
-      <p>{{ campaign.description }}</p>
-      <div class="campaign-stats">
-        <div class="stat">
-          <mat-icon>monetization_on</mat-icon>
-          <span>${{ campaign.budget | number:'1.0-0' }}</span>
+  <!-- Cards grid -->
+  <div class="campaigns-container" [@cardAnimation]="pagedCampaigns.length">
+    <mat-card *ngFor="let campaign of pagedCampaigns" class="campaign-card" [ngClass]="'status-' + campaign.status.toLowerCase()">
+      <mat-card-header>
+        <mat-card-title>{{ campaign.name }}</mat-card-title>
+        <mat-card-subtitle>
+          <span [class]="'status-badge status-' + campaign.status.toLowerCase()">{{ campaign.status }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <p class="campaign-description">{{ campaign.description }}</p>
+        <div class="campaign-dates" *ngIf="campaign.startDate">
+          <span class="date-label">Period:</span>
+          <span class="date-value">{{ campaign.startDate | slice:0:10 }} to {{ campaign.endDate | slice:0:10 }}</span>
         </div>
-        <div class="stat">
-          <mat-icon>trending_up</mat-icon>
-          <span>{{ campaign.performance }} Performance</span>
+        <div class="campaign-stats">
+          <div class="stat">
+            <mat-icon>monetization_on</mat-icon>
+            <span>${{ campaign.budget | number:'1.0-0' }}</span>
+          </div>
+          <div class="stat">
+            <mat-icon>trending_up</mat-icon>
+            <span>{{ campaign.performance }} Performance</span>
+          </div>
         </div>
-      </div>
-    </mat-card-content>
-    
-    <mat-card-actions>
-      <button mat-raised-button color="primary">
-        <mat-icon>visibility</mat-icon> View
-      </button>
-      <button mat-stroked-button color="accent">
-        <mat-icon>edit</mat-icon> Edit
-      </button>
-    </mat-card-actions>
-  </mat-card>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <button mat-raised-button color="primary">
+          <mat-icon>visibility</mat-icon> View
+        </button>
+        <button mat-stroked-button color="accent">
+          <mat-icon>edit</mat-icon> Edit
+        </button>
+      </mat-card-actions>
+      
+      <div class="card-decoration" [ngClass]="'decoration-' + campaign.status.toLowerCase()"></div>
+    </mat-card>
+  </div>
   
-  <div *ngIf="!loading && featuredCampaigns.length === 0" class="empty-state">
+  <!-- Debug info for pagination -->
+  <div *ngIf="!loading && filteredCampaigns.length === 0" class="empty-state">
     <mat-icon>campaign_off</mat-icon>
-    <p>No featured campaigns found.</p>
+    <p>No campaigns found.</p>
+  </div>
+  
+  <!-- Enhanced Pagination -->
+  <div class="pagination-container" *ngIf="!loading && filteredCampaigns.length > 0">
+    <div class="pagination-info">
+      Showing {{startIndex + 1}}-{{endIndex}} of {{filteredCampaigns.length}} campaigns
+    </div>
+    
+    <mat-paginator 
+      [length]="filteredCampaigns.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[6, 9, 12, 24]"
+      (page)="pageChanged($event)"
+      aria-label="Select page"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

@@ -1,8 +1,270 @@
+// Main changes in the campaigns container class
+.campaigns-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 40%;
+      height: 3px;
+      background: linear-gradient(90deg, #4f46e5, #d946ef);
+      border-radius: 3px;
+    }
+  }
+  
+  .add-button {
+    background: linear-gradient(45deg, #4f46e5, #818cf8);
+    color: white;
+    padding: 0 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Enhanced search and filter controls
+.controls-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  
+  .search-container {
+    display: flex;
+    align-items: center;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 0 12px;
+    flex: 1;
+    max-width: 400px;
+    height: 45px;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    
+    &.active, &:focus-within {
+      border-color: #4f46e5;
+      background-color: rgba(79, 70, 229, 0.05);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+    
+    mat-icon {
+      color: #64748b;
+      margin-right: 8px;
+    }
+    
+    .search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      height: 100%;
+      font-size: 14px;
+      color: #334155;
+      
+      &::placeholder {
+        color: #94a3b8;
+        transition: color 0.3s ease;
+      }
+      
+      &:focus::placeholder {
+        color: #cbd5e1;
+      }
+    }
+    
+    .clear-search {
+      margin: -8px;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        margin: 0;
+        color: #94a3b8;
+      }
+      
+      &:hover mat-icon {
+        color: #475569;
+      }
+    }
+  }
+  
+  .filter-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    
+    .filter-field-container {
+      position: relative;
+      
+      mat-form-field {
+        width: 150px;
+        
+        ::ng-deep .mat-form-field-wrapper {
+          margin-bottom: -1.25em;
+        }
+        
+        ::ng-deep .mat-form-field-outline {
+          transition: color 0.3s ease;
+        }
+        
+        &:hover ::ng-deep .mat-form-field-outline {
+          opacity: 1;
+        }
+      }
+      
+      .reset-filter {
+        position: absolute;
+        right: -4px;
+        top: -8px;
+        z-index: 2;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        
+        mat-icon {
+          font-size: 14px;
+          height: 14px;
+          width: 14px;
+          color: #94a3b8;
+        }
+        
+        &:hover {
+          background: #f1f5f9;
+          
+          mat-icon {
+            color: #475569;
+          }
+        }
+      }
+    }
+    
+    .reset-all-button {
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      height: 36px;
+      
+      mat-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+        margin-right: 4px;
+      }
+      
+      &:enabled:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+    }
+  }
+}
+
+// Active filters display
+.active-filters {
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  
+  .filter-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+  }
+  
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .filter-chip {
+    background-color: #eef2ff;
+    color: #4f46e5;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    
+    mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      margin-left: 4px;
+      cursor: pointer;
+      
+      &:hover {
+        color: #312e81;
+      }
+    }
+  }
+}
+
+// Updated to 3 cards per row (instead of 4)
 .campaigns-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  margin-top: 20px;
+  margin-bottom: 24px;
+  
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .campaign-card {
@@ -13,6 +275,7 @@
   position: relative;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.03);
   
   // Add glossy effect to card corners
   &::before {
@@ -38,6 +301,20 @@
     z-index: 1;
   }
   
+  // Card decoration
+  .card-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    z-index: 0;
+    opacity: 0.1;
+    transform: translate(30%, -30%);
+    transition: all 0.3s ease;
+    border-radius: 50%;
+  }
+  
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
@@ -45,24 +322,51 @@
     &::before {
       background: linear-gradient(90deg, #4f46e5, #d946ef);
     }
+    
+    .card-decoration {
+      transform: translate(20%, -20%) scale(1.2);
+      opacity: 0.15;
+    }
   }
   
-  // Update status corner styles
+  // Status styling
   &.status-active {
-    &::after {
-      background: linear-gradient(135deg, transparent 50%, rgba(16, 185, 129, 0.1) 50%);
+    &::before {
+      background: linear-gradient(90deg, #059669, #10b981);
+    }
+    
+    .decoration-active {
+      background: radial-gradient(circle, #059669 0%, transparent 70%);
     }
   }
   
   &.status-paused {
-    &::after {
-      background: linear-gradient(135deg, transparent 50%, rgba(245, 158, 11, 0.1) 50%);
+    &::before {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+    
+    .decoration-paused {
+      background: radial-gradient(circle, #f59e0b 0%, transparent 70%);
     }
   }
   
-  &.status-planned {
-    &::after {
-      background: linear-gradient(135deg, transparent 50%, rgba(59, 130, 246, 0.1) 50%);
+  &.status-ended {
+    &::before {
+      background: linear-gradient(90deg, #6366f1, #a5b4fc);
+    }
+    
+    .decoration-ended {
+      background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+    }
+  }
+  
+  &.status-draft {
+    &::before {
+      background: linear-gradient(90deg, #a855f7, #d8b4fe);
+    }
+    
+    .decoration-draft {
+      background: radial-gradient(circle, #a855f7 0%, transparent 70%);
     }
   }
   
@@ -77,6 +381,9 @@
     font-weight: 600;
     margin-bottom: 10px;
     color: #1e293b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   mat-card-content {
@@ -84,7 +391,7 @@
     position: relative;
     z-index: 2;
     
-    p {
+    .campaign-description {
       margin-bottom: 16px;
       font-size: 14px;
       line-height: 1.5;
@@ -94,6 +401,23 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      height: 42px; // Fixed height for 2 lines
+    }
+    
+    .campaign-dates {
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #64748b;
+      
+      .date-label {
+        font-weight: 500;
+        margin-right: 4px;
+        color: #475569;
+      }
+      
+      .date-value {
+        color: #64748b;
+      }
     }
   }
   
@@ -157,6 +481,29 @@
   }
 }
 
+// Enhanced pagination
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  
+  .pagination-info {
+    font-size: 13px;
+    color: #64748b;
+  }
+  
+  mat-paginator {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+// Enhanced status badges
 .status-badge {
   display: inline-block;
   font-size: 11px;
@@ -165,6 +512,24 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  
+  &:hover::before {
+    transform: translateX(100%);
+  }
 }
 
 .status-active {
@@ -175,6 +540,16 @@
 .status-paused {
   background-color: rgba(245, 158, 11, 0.1);
   color: #f59e0b;
+}
+
+.status-ended {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.status-draft {
+  background-color: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
 }
 
 .status-planned {
@@ -188,7 +563,6 @@
   align-items: center;
   min-height: 200px;
   width: 100%;
-  grid-column: 1 / -1;
 }
 
 .error-message {
@@ -198,17 +572,11 @@
   border-radius: 8px;
   display: flex;
   align-items: center;
-  grid-column: 1 / -1;
+  margin-bottom: 24px;
   
   mat-icon {
     margin-right: 8px;
   }
-}
-
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .empty-state {
@@ -217,7 +585,7 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  grid-column: 1 / -1;
+  margin-bottom: 30px;
   
   mat-icon {
     font-size: 48px;
@@ -233,4 +601,7 @@
   }
 }
 
-// Keep all your existing styles
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -9,8 +9,8 @@
   </div>
 
   <div class="stats-cards" [@listAnimation]="campaigns.length">
-    <!-- Enhanced Total Campaigns Card -->
-    <mat-card>
+    <!-- Total Campaigns Card -->
+    <mat-card @cardAnimation>
       <mat-card-content>
         <div class="stat-header">
           <mat-icon class="stat-icon">campaign</mat-icon>
@@ -27,8 +27,8 @@
       <div class="stat-footer"></div>
     </mat-card>
     
-    <!-- Enhanced Budget Card -->
-    <mat-card>
+    <!-- Budget Card -->
+    <mat-card @cardAnimation>
       <mat-card-content>
         <div class="stat-header">
           <mat-icon class="stat-icon">monetization_on</mat-icon>
@@ -47,8 +47,8 @@
       </div>
     </mat-card>
     
-    <!-- Enhanced Active Campaigns Card -->
-    <mat-card>
+    <!-- Active Campaigns Card -->
+    <mat-card @cardAnimation>
       <mat-card-content>
         <div class="stat-header">
           <mat-icon class="stat-icon">trending_up</mat-icon>
@@ -66,10 +66,125 @@
         <div class="stat-progress-bar" [style.width.%]="getActivePercentage()"></div>
       </div>
     </mat-card>
+    
+    <!-- Paused Campaigns Card -->
+    <mat-card @cardAnimation>
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">pause_circle</mat-icon>
+          <span class="stat-label">Paused Campaigns</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{getPausedCount()}}</div>
+          <div class="stat-trend" [ngClass]="getPausedCount() > 0 ? 'trend-paused' : 'trend-neutral'">
+            <mat-icon>{{ getPausedCount() > 0 ? 'pause_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{getPausedPercentage() | number:'1.0-0'}}% of total</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <div class="stat-progress">
+        <div class="stat-progress-bar paused-bar" [style.width.%]="getPausedPercentage()"></div>
+      </div>
+    </mat-card>
   </div>
 
   <div class="campaign-section">
     <h2>Campaign Overview</h2>
+    
+    <!-- Enhanced Search & Filter Bar -->
+    <div class="controls-container">
+      <!-- Search with clear button -->
+      <div class="search-container" [class.active]="searchText">
+        <mat-icon>search</mat-icon>
+        <input 
+          type="text" 
+          placeholder="Search campaigns..." 
+          [(ngModel)]="searchText"
+          (keyup)="applyFilter()" 
+          class="search-input"
+        >
+        <button 
+          *ngIf="searchText" 
+          mat-icon-button 
+          class="clear-search" 
+          (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="filter-controls">
+        <!-- Status filter with reset -->
+        <div class="filter-field-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select [(ngModel)]="currentStatusFilter" (selectionChange)="applyStatusFilter()">
+              <mat-option value="all">All Statuses</mat-option>
+              <mat-option value="active">Active</mat-option>
+              <mat-option value="paused">Paused</mat-option>
+              <mat-option value="ended">Ended</mat-option>
+              <mat-option value="draft">Draft</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button 
+            *ngIf="currentStatusFilter !== 'all'" 
+            mat-icon-button 
+            class="reset-filter"
+            (click)="resetStatusFilter()">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Sort with reset -->
+        <div class="filter-field-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Sort By</mat-label>
+            <mat-select [(ngModel)]="currentSortBy" (selectionChange)="sortData()">
+              <mat-option value="">No Sorting</mat-option>
+              <mat-option value="name">Name (A-Z)</mat-option>
+              <mat-option value="name_desc">Name (Z-A)</mat-option>
+              <mat-option value="budget">Budget (Low-High)</mat-option>
+              <mat-option value="budget_desc">Budget (High-Low)</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button 
+            *ngIf="currentSortBy" 
+            mat-icon-button 
+            class="reset-filter" 
+            (click)="resetSort()">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Reset all filters button -->
+        <button 
+          mat-stroked-button 
+          class="reset-all-button" 
+          [disabled]="!hasActiveFilters()" 
+          (click)="resetAllFilters()">
+          <mat-icon>restart_alt</mat-icon>
+          Reset
+        </button>
+      </div>
+    </div>
+    
+    <!-- Active filters display -->
+    <div class="active-filters" *ngIf="hasActiveFilters()">
+      <span class="filter-label">Active filters:</span>
+      <div class="filter-chips">
+        <span class="filter-chip" *ngIf="searchText">
+          Search: "{{searchText}}"
+          <mat-icon (click)="clearSearch()">close</mat-icon>
+        </span>
+        <span class="filter-chip" *ngIf="currentStatusFilter !== 'all'">
+          Status: {{currentStatusFilter | titlecase}}
+          <mat-icon (click)="resetStatusFilter()">close</mat-icon>
+        </span>
+        <span class="filter-chip" *ngIf="currentSortBy">
+          Sort: {{getSortLabel()}}
+          <mat-icon (click)="resetSort()">close</mat-icon>
+        </span>
+      </div>
+    </div>
     
     <div *ngIf="loading" class="loading-spinner">
       <mat-spinner diameter="40"></mat-spinner>
@@ -79,8 +194,8 @@
       <mat-icon>error</mat-icon> {{error}}
     </div>
     
-    <div class="table-container" *ngIf="!loading && campaigns.length">
-      <table mat-table [dataSource]="campaigns" class="campaign-table" [@listAnimation]="campaigns.length">
+    <div class="table-container" *ngIf="!loading && filteredCampaigns.length">
+      <table mat-table [dataSource]="pagedCampaigns" class="campaign-table" [@listAnimation]="pagedCampaigns.length">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Campaign Name</th>
           <td mat-cell *matCellDef="let campaign">{{campaign.campaignName}}</td>
@@ -91,7 +206,7 @@
           <td mat-cell *matCellDef="let campaign">{{campaign.campaignObjective || 'N/A'}}</td>
         </ng-container>
         
-        <!-- Fixed Status Column -->
+        <!-- Updated Status Column with new statuses -->
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let campaign">
@@ -123,7 +238,23 @@
       </table>
     </div>
     
-    <div *ngIf="!loading && campaigns.length === 0" class="empty-state">
+    <!-- Enhanced Pagination Controls -->
+    <div class="pagination-container" *ngIf="!loading && filteredCampaigns.length > 0">
+      <div class="pagination-info">
+        Showing {{startIndex + 1}}-{{endIndex}} of {{filteredCampaigns.length}} campaigns
+      </div>
+      
+      <mat-paginator 
+        [length]="filteredCampaigns.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        (page)="pageChanged($event)"
+        aria-label="Select page"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+    
+    <div *ngIf="!loading && filteredCampaigns.length === 0" class="empty-state">
       <mat-icon>campaign_off</mat-icon>
       <p>No campaigns found. Create your first campaign to get started!</p>
       <button mat-raised-button color="primary">
@@ -131,11 +262,5 @@
         Create Campaign
       </button>
     </div>
-  </div>
-  
-  <!-- Featured Campaigns Section -->
-  <div class="featured-campaigns">
-    <h2>Featured Campaigns</h2>
-    <app-campaigns [inputCampaigns]="campaigns"></app-campaigns>
   </div>
 </div>
