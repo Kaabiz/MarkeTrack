@@ -34,26 +34,55 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
           ])
         ], { optional: true })
       ])
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
     ])
   ]
 })
 export class DashboardComponent implements OnInit {
   campaigns: Campaign[] = [];
+  displayedColumns: string[] = ['name', 'objective', 'status', 'budget', 'actions'];
   loading = false;
   error?: string;
 
   constructor(private campaignService: CampaignService) {}
 
   ngOnInit() {
+    this.loadCampaigns();
+  }
+
+  loadCampaigns() {
     this.loading = true;
     this.campaignService.getCampaigns().subscribe({
       next: (data) => {
         this.campaigns = data;
         this.loading = false;
-        console.log('Campaigns:', this.campaigns);
+        console.log('Campaigns loaded:', this.campaigns.length);
       },
       error: (err) => {
         this.error = 'Failed to load campaigns.';
+        this.loading = false;
+        console.error(err);
+      }
+    });
+  }
+
+  refreshData() {
+    this.loading = true;
+    this.error = undefined;
+    
+    this.campaignService.getCampaigns().subscribe({
+      next: (data) => {
+        this.campaigns = data;
+        this.loading = false;
+        console.log('Campaigns refreshed:', this.campaigns.length);
+      },
+      error: (err) => {
+        this.error = 'Failed to refresh campaigns.';
         this.loading = false;
         console.error(err);
       }
@@ -64,7 +93,26 @@ export class DashboardComponent implements OnInit {
     return this.campaigns.reduce((sum, campaign) => sum + (campaign.campaignBudget || 0), 0);
   }
   
+  // Fixed to be case-insensitive
   getActiveCount(): number {
-    return this.campaigns.filter(c => c.campaignStatus === 'Active').length;
+    return this.campaigns.filter(c => 
+      c.campaignStatus?.toLowerCase() === 'active'
+    ).length;
+  }
+  
+  // Add methods to get percentages for better visualization
+  getActivePercentage(): number {
+    return this.campaigns.length > 0 
+      ? (this.getActiveCount() / this.campaigns.length) * 100 
+      : 0;
+  }
+  
+  getBudgetUtilization(): number {
+    const totalBudget = this.getTotalBudget();
+    const activeBudget = this.campaigns
+      .filter(c => c.campaignStatus?.toLowerCase() === 'active')
+      .reduce((sum, campaign) => sum + (campaign.campaignBudget || 0), 0);
+    
+    return totalBudget > 0 ? (activeBudget / totalBudget) * 100 : 0;
   }
 }

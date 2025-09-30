@@ -66,9 +66,11 @@
   }
 }
 
+
 .app-container {
   padding: 24px;
   max-width: 1600px;
   margin: 0 auto;
-  min-height: calc(100vh - 64px - 48px); /* account for toolbar height + padding */
+  min-height: calc(100vh - 64px - 48px);
+  background-color: var(--background-light); /* Ensure consistent background */
 }

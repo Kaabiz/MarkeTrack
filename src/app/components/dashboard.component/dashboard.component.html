@@ -1,28 +1,70 @@
 <div class="dashboard-container">
   <div class="header">
     <h1>MarkeTrack Dashboard</h1>
+    <div class="header-actions">
+      <button mat-icon-button class="refresh-button" (click)="refreshData()" title="Refresh data" [disabled]="loading">
+        <mat-icon [class.rotating]="loading">refresh</mat-icon>
+      </button>
+    </div>
   </div>
 
-  <div class="stats-cards">
+  <div class="stats-cards" [@listAnimation]="campaigns.length">
+    <!-- Enhanced Total Campaigns Card -->
     <mat-card>
       <mat-card-content>
-        <div class="stat-value">{{campaigns.length}}</div>
-        <div class="stat-label">Total Campaigns</div>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">campaign</mat-icon>
+          <span class="stat-label">Total Campaigns</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{campaigns.length}}</div>
+          <div class="stat-trend trend-up" *ngIf="campaigns.length > 0">
+            <mat-icon>trending_up</mat-icon>
+            <span>+{{ campaigns.length }} total</span>
+          </div>
+        </div>
       </mat-card-content>
+      <div class="stat-footer"></div>
     </mat-card>
     
+    <!-- Enhanced Budget Card -->
     <mat-card>
       <mat-card-content>
-        <div class="stat-value">${{getTotalBudget() | number:'1.0-0'}}</div>
-        <div class="stat-label">Total Budget</div>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">monetization_on</mat-icon>
+          <span class="stat-label">Total Budget</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">${{getTotalBudget() | number:'1.0-0'}}</div>
+          <div class="stat-trend trend-up">
+            <mat-icon>pie_chart</mat-icon>
+            <span>{{getBudgetUtilization() | number:'1.0-0'}}% utilized</span>
+          </div>
+        </div>
       </mat-card-content>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" [style.width.%]="getBudgetUtilization()"></div>
+      </div>
     </mat-card>
     
+    <!-- Enhanced Active Campaigns Card -->
     <mat-card>
       <mat-card-content>
-        <div class="stat-value">{{getActiveCount()}}</div>
-        <div class="stat-label">Active Campaigns</div>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">trending_up</mat-icon>
+          <span class="stat-label">Active Campaigns</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{getActiveCount()}}</div>
+          <div class="stat-trend" [ngClass]="getActiveCount() > 0 ? 'trend-up' : 'trend-neutral'">
+            <mat-icon>{{ getActiveCount() > 0 ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{getActivePercentage() | number:'1.0-0'}}% of total</span>
+          </div>
+        </div>
       </mat-card-content>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" [style.width.%]="getActivePercentage()"></div>
+      </div>
     </mat-card>
   </div>
 
@@ -37,50 +79,58 @@
       <mat-icon>error</mat-icon> {{error}}
     </div>
     
-    <table mat-table [dataSource]="campaigns" class="mat-elevation-z2 campaign-table" 
-           *ngIf="!loading && campaigns.length">
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let c">{{c.campaignId}}</td>
-      </ng-container>
-      
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let c">{{c.campaignName}}</td>
-      </ng-container>
-      
-      <ng-container matColumnDef="objective">
-        <th mat-header-cell *matHeaderCellDef>Objective</th>
-        <td mat-cell *matCellDef="let c">{{c.campaignObjective}}</td>
-      </ng-container>
-      
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let c" [ngClass]="'status-' + c.campaignStatus.toLowerCase()">
-          {{c.campaignStatus}}
-        </td>
-      </ng-container>
-      
-      <ng-container matColumnDef="budget">
-        <th mat-header-cell *matHeaderCellDef>Budget</th>
-        <td mat-cell *matCellDef="let c">{{c.campaignBudget | currency:'USD':'symbol':'1.0-0'}}</td>
-      </ng-container>
-      
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let c">
-          <button mat-icon-button color="primary" title="View">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" title="Edit">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-      
-      <tr mat-header-row *matHeaderRowDef="['id', 'name', 'objective', 'status', 'budget', 'actions']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['id', 'name', 'objective', 'status', 'budget', 'actions']"></tr>
-    </table>
+    <div class="table-container" *ngIf="!loading && campaigns.length">
+      <table mat-table [dataSource]="campaigns" class="campaign-table" [@listAnimation]="campaigns.length">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Campaign Name</th>
+          <td mat-cell *matCellDef="let campaign">{{campaign.campaignName}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="objective">
+          <th mat-header-cell *matHeaderCellDef>Objective</th>
+          <td mat-cell *matCellDef="let campaign">{{campaign.campaignObjective || 'N/A'}}</td>
+        </ng-container>
+        
+        <!-- Fixed Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let campaign">
+            <div [ngClass]="'status-indicator status-' + campaign.campaignStatus.toLowerCase()">
+              {{campaign.campaignStatus}}
+            </div>
+          </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="budget">
+          <th mat-header-cell *matHeaderCellDef>Budget</th>
+          <td mat-cell *matCellDef="let campaign">${{campaign.campaignBudget | number:'1.0-0'}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let campaign">
+            <button mat-icon-button title="View Campaign">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button title="Edit Campaign">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    
+    <div *ngIf="!loading && campaigns.length === 0" class="empty-state">
+      <mat-icon>campaign_off</mat-icon>
+      <p>No campaigns found. Create your first campaign to get started!</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>
+        Create Campaign
+      </button>
+    </div>
   </div>
   
   <!-- Featured Campaigns Section -->

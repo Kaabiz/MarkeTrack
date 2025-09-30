@@ -9,11 +9,12 @@
   height: 100%;
   border-radius: 16px;
   transition: all 0.3s ease;
-  overflow: hidden;
   background: white;
   position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   
+  // Add glossy effect to card corners
   &::before {
     content: '';
     position: absolute;
@@ -26,86 +27,81 @@
     transition: background 0.3s ease;
   }
   
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.05) 50%);
+    z-index: 1;
+  }
+  
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
     
     &::before {
       background: linear-gradient(90deg, #4f46e5, #d946ef);
     }
   }
   
-  // Colored backgrounds by status
+  // Update status corner styles
   &.status-active {
     &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 120px;
-      height: 120px;
       background: linear-gradient(135deg, transparent 50%, rgba(16, 185, 129, 0.1) 50%);
-      z-index: 1;
     }
   }
   
   &.status-paused {
     &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 120px;
-      height: 120px;
       background: linear-gradient(135deg, transparent 50%, rgba(245, 158, 11, 0.1) 50%);
-      z-index: 1;
     }
   }
   
   &.status-planned {
     &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 120px;
-      height: 120px;
       background: linear-gradient(135deg, transparent 50%, rgba(59, 130, 246, 0.1) 50%);
-      z-index: 1;
     }
   }
   
   mat-card-header {
-    padding: 24px 24px 16px;
+    padding: 20px 20px 10px;
     position: relative;
     z-index: 2;
   }
   
   mat-card-title {
-    font-size: 20px;
-    margin-bottom: 12px;
-    color: #1e293b;
+    font-size: 18px;
     font-weight: 600;
+    margin-bottom: 10px;
+    color: #1e293b;
   }
   
   mat-card-content {
-    padding: 0 24px 16px;
+    padding: 0 20px 15px;
     position: relative;
     z-index: 2;
     
     p {
-      margin-bottom: 18px;
-      font-size: 15px;
-      line-height: 1.6;
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.5;
       color: #64748b;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   
   .campaign-stats {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 15px;
+    padding-top: 15px;
     border-top: 1px solid #f1f5f9;
     
     .stat {
@@ -115,11 +111,13 @@
       mat-icon {
         margin-right: 8px;
         color: #64748b;
-        font-size: 20px;
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
       }
       
       span {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 500;
         color: #334155;
       }
@@ -127,7 +125,7 @@
   }
   
   mat-card-actions {
-    padding: 16px 24px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     background-color: #f8fafc;
@@ -136,7 +134,8 @@
     
     button {
       transition: all 0.2s ease;
-      border-radius: 8px;
+      border-radius: 6px;
+      font-size: 13px;
       
       &:first-child {
         background: linear-gradient(45deg, #4f46e5, #818cf8);
@@ -149,7 +148,10 @@
       }
       
       mat-icon {
-        margin-right: 8px;
+        margin-right: 6px;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
       }
     }
   }
@@ -157,8 +159,8 @@
 
 .status-badge {
   display: inline-block;
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 11px;
+  padding: 4px 10px;
   border-radius: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -202,3 +204,33 @@
     margin-right: 8px;
   }
 }
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  grid-column: 1 / -1;
+  
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 16px;
+    color: #94a3b8;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #64748b;
+  }
+}
+
+// Keep all your existing styles

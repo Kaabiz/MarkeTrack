@@ -1,4 +1,6 @@
 <div class="campaigns-container">
+  <!-- Refresh button removed -->
+  
   <div *ngIf="loading" class="loading-container">
     <mat-spinner diameter="40"></mat-spinner>
   </div>
@@ -38,4 +40,9 @@
       </button>
     </mat-card-actions>
   </mat-card>
+  
+  <div *ngIf="!loading && featuredCampaigns.length === 0" class="empty-state">
+    <mat-icon>campaign_off</mat-icon>
+    <p>No featured campaigns found.</p>
+  </div>
 </div>
