@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Campaign {
@@ -24,9 +25,11 @@ public class Campaign {
 
     @ManyToOne
     @JoinColumn(name = "created_by")
+    @JsonIgnore
     private User createdBy;
 
     @OneToMany(mappedBy = "campaign")
+    @JsonIgnore
     private Set<CampaignChannel> campaignChannels;
 
     @ManyToMany
@@ -35,12 +38,15 @@ public class Campaign {
         joinColumns = @JoinColumn(name = "campaign_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @JsonIgnore
     private Set<Tag> tags;
 
     @OneToMany(mappedBy = "campaign")
+    @JsonIgnore
     private Set<Report> reports;
 
     @OneToMany(mappedBy = "campaign")
+    @JsonIgnore
     private Set<CampaignProlongationHistory> prolongations;
 
     public Long getCampaignId() {
