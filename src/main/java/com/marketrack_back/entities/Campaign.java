@@ -49,6 +49,63 @@ public class Campaign {
     @JsonIgnore
     private Set<CampaignProlongationHistory> prolongations;
 
+
+// add these simple fields directly on Campaign
+    private String targetGender;     // "Male","Female","Other", or null for Any
+    private Integer targetMinAge;    // nullable
+    private Integer targetMaxAge;    // nullable
+    private String targetOccupation; // free text (we'll do LIKE)
+    private String targetLocation;   // free text (LIKE)
+    private String targetInterests;  // comma-separated keywords (e.g., "fitness,tech")
+
+    public String getTargetGender() {
+        return targetGender;
+    }
+
+    public void setTargetGender(String targetGender) {
+        this.targetGender = targetGender;
+    }
+
+    public Integer getTargetMinAge() {
+        return targetMinAge;
+    }
+
+    public void setTargetMinAge(Integer targetMinAge) {
+        this.targetMinAge = targetMinAge;
+    }
+
+    public Integer getTargetMaxAge() {
+        return targetMaxAge;
+    }
+
+    public void setTargetMaxAge(Integer targetMaxAge) {
+        this.targetMaxAge = targetMaxAge;
+    }
+
+    public String getTargetOccupation() {
+        return targetOccupation;
+    }
+
+    public void setTargetOccupation(String targetOccupation) {
+        this.targetOccupation = targetOccupation;
+    }
+
+    public String getTargetLocation() {
+        return targetLocation;
+    }
+
+    public void setTargetLocation(String targetLocation) {
+        this.targetLocation = targetLocation;
+    }
+
+    public String getTargetInterests() {
+        return targetInterests;
+    }
+
+    public void setTargetInterests(String targetInterests) {
+        this.targetInterests = targetInterests;
+    }
+
     public Long getCampaignId() {
         return campaignId;
     }
