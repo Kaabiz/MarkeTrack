@@ -13,6 +13,9 @@ import { Campaign } from '../../models/campaign.model';
 import { CampaignService } from '../../services/campaign.service';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { CampaignFormDialogComponent } from '../campaign-form-dialog/campaign-form-dialog';
 
 @Component({
   selector: 'app-campaigns',
@@ -28,7 +31,8 @@ import { FormsModule } from '@angular/forms';
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    RouterLink
   ],
   templateUrl: './campaigns.html',
   styleUrls: ['./campaigns.scss'],
@@ -73,8 +77,11 @@ export class Campaigns implements OnInit, OnChanges {
   startIndex = 0;
   endIndex = 0;
   
-  constructor(private campaignService: CampaignService) {}
-  
+  constructor(
+    private campaignService: CampaignService,
+    private dialog: MatDialog  // ADD THIS LINE
+  ) {}  
+
   ngOnInit() {
     this.loadCampaigns();
     console.log('Campaign component initialized');
@@ -85,6 +92,39 @@ export class Campaigns implements OnInit, OnChanges {
       console.log('Input campaigns changed, count:', this.inputCampaigns?.length);
       this.loadCampaigns();
     }
+  }
+
+    openCreateCampaignDialog() {
+    const dialogRef = this.dialog.open(CampaignFormDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      disableClose: true,
+      data: { mode: 'create' }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.success) {
+        this.loadCampaigns();
+      }
+    });
+  }
+  
+  openEditCampaignDialog(campaign: any) {
+    const dialogRef = this.dialog.open(CampaignFormDialogComponent, {
+      width: '800px',
+      maxHeight: '90vh',
+      disableClose: true,
+      data: { 
+        mode: 'edit',
+        campaign: campaign
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.success) {
+        this.loadCampaigns();
+      }
+    });
   }
   
   loadCampaigns() {

@@ -1,15 +1,15 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
-  import { NoCacheInterceptor } from './interceptors/no-cache-interceptor';
+import { provideNativeDateAdapter } from '@angular/material/core'; // ADD THIS
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
+    provideHttpClient(),
     provideAnimations(),
-    provideHttpClient(
-      withInterceptors([NoCacheInterceptor])
-    )
+    provideNativeDateAdapter()  // ADD THIS LINE
   ]
 };

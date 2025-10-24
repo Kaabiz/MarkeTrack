@@ -1,11 +1,12 @@
 <div class="campaigns-page">
-  <div class="header">
-    <h1>Campaign Management</h1>
-    <button mat-raised-button color="primary" class="add-button">
-      <mat-icon>add</mat-icon>
-      New Campaign
-    </button>
-  </div>
+
+    <div class="header">
+      <h1>Campaign Management</h1>
+      <button mat-raised-button color="primary" class="add-button" (click)="openCreateCampaignDialog()">        <mat-icon>add</mat-icon>
+        New Campaign
+      </button>
+    </div>
+  
   
   <!-- Enhanced Search & Filter Controls -->
   <div class="controls-container">
@@ -170,5 +171,7 @@
       aria-label="Select page"
       showFirstLastButtons>
     </mat-paginator>
+
+    
   </div>
 </div>

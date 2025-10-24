@@ -1,1 +1,164 @@
-<p>campaign-form works!</p>
+<div class="campaign-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>campaign</mat-icon>
+        {{ isEditMode ? 'Edit Campaign' : 'Create New Campaign' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <h3>Basic Information</h3>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Campaign Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter campaign name">
+            <mat-icon matPrefix>label</mat-icon>
+            <mat-error *ngIf="campaignForm.get('name')?.hasError('required')">
+              Campaign name is required
+            </mat-error>
+            <mat-error *ngIf="campaignForm.get('name')?.hasError('minlength')">
+              Name must be at least 3 characters
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Channel</mat-label>
+              <mat-select formControlName="channel">
+                <mat-option *ngFor="let channel of channelOptions" [value]="channel">
+                  {{ channel }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>podcasts</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Budget ($)</mat-label>
+              <input matInput type="number" formControlName="budget" placeholder="0">
+              <mat-icon matPrefix>monetization_on</mat-icon>
+              <mat-error *ngIf="campaignForm.get('budget')?.hasError('min')">
+                Budget must be positive
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of statusOptions" [value]="status">
+                {{ status }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>flag</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Target Audience Section -->
+        <div class="form-section target-section">
+          <div class="section-header">
+            <h3>
+              <mat-icon>people</mat-icon>
+              Target Audience
+            </h3>
+            <button 
+              mat-stroked-button 
+              type="button" 
+              color="warn" 
+              (click)="clearTargeting()"
+              *ngIf="hasTargetingCriteria()">
+              <mat-icon>clear</mat-icon>
+              Clear Filters
+            </button>
+          </div>
+
+          <div class="targeting-info" *ngIf="hasTargetingCriteria()">
+            <mat-icon>info</mat-icon>
+            <span>
+              <strong>{{ audienceCount }}</strong> client(s) match your targeting criteria
+            </span>
+            <mat-spinner *ngIf="loadingCount" diameter="20"></mat-spinner>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="targetGender">
+                <mat-option [value]="null">Any</mat-option>
+                <mat-option *ngFor="let gender of genderOptions" [value]="gender">
+                  {{ gender }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>wc</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Occupation</mat-label>
+              <input matInput formControlName="targetOccupation" placeholder="e.g., Engineer">
+              <mat-icon matPrefix>work</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Min Age</mat-label>
+              <input matInput type="number" formControlName="targetMinAge" placeholder="18">
+              <mat-icon matPrefix>cake</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Max Age</mat-label>
+              <input matInput type="number" formControlName="targetMaxAge" placeholder="65">
+              <mat-icon matPrefix>cake</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="targetLocation" placeholder="e.g., New York">
+            <mat-icon matPrefix>location_on</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Interests (comma-separated)</mat-label>
+            <input matInput formControlName="targetInterests" placeholder="e.g., fitness, tech, travel">
+            <mat-icon matPrefix>interests</mat-icon>
+            <mat-hint>Separate multiple interests with commas</mat-hint>
+          </mat-form-field>
+
+          <button 
+            mat-raised-button 
+            color="accent" 
+            type="button" 
+            class="preview-button"
+            (click)="previewAudience()"
+            [disabled]="!hasTargetingCriteria() || audienceCount === 0">
+            <mat-icon>visibility</mat-icon>
+            Preview Audience ({{ audienceCount }})
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="campaignForm.invalid || loading">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            {{ isEditMode ? 'Update Campaign' : 'Create Campaign' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
