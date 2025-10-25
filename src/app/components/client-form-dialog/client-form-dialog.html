@@ -1,0 +1,129 @@
+<div class="dialog-container">
+  
+  <!-- Header -->
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+    <span>{{ isEditMode ? 'Edit Client' : 'Add New Client' }}</span>
+  </h2>
+
+  <!-- Content -->
+  <mat-dialog-content>
+    <form [formGroup]="clientForm" class="client-form">
+      
+      <!-- Name Row -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeholder="John">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="hasError('firstName', 'required')">
+            First name is required
+          </mat-error>
+          <mat-error *ngIf="hasError('firstName', 'minlength')">
+            Minimum 2 characters required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" placeholder="Doe">
+          <mat-icon matPrefix>person_outline</mat-icon>
+          <mat-error *ngIf="hasError('lastName', 'required')">
+            Last name is required
+          </mat-error>
+          <mat-error *ngIf="hasError('lastName', 'minlength')">
+            Minimum 2 characters required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="form-field-full">
+        <mat-label>Email Address</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="john.doe@example.com">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="hasError('email', 'required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="hasError('email', 'email')">
+          Please enter a valid email address
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Age & Gender Row -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Age</mat-label>
+          <input matInput type="number" formControlName="age" placeholder="25">
+          <mat-icon matPrefix>cake</mat-icon>
+          <mat-error *ngIf="hasError('age', 'min')">
+            Age must be at least 1
+          </mat-error>
+          <mat-error *ngIf="hasError('age', 'max')">
+            Age must be less than 120
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender">
+            <mat-option *ngFor="let gender of genderOptions" [value]="gender">
+              {{ gender }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>wc</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Occupation -->
+      <mat-form-field appearance="outline" class="form-field-full">
+        <mat-label>Occupation</mat-label>
+        <input matInput formControlName="occupation" placeholder="Software Engineer">
+        <mat-icon matPrefix>work</mat-icon>
+      </mat-form-field>
+
+      <!-- Location -->
+      <mat-form-field appearance="outline" class="form-field-full">
+        <mat-label>Location</mat-label>
+        <input matInput formControlName="location" placeholder="New York, USA">
+        <mat-icon matPrefix>location_on</mat-icon>
+      </mat-form-field>
+
+      <!-- Interests -->
+      <mat-form-field appearance="outline" class="form-field-full">
+        <mat-label>Interests</mat-label>
+        <textarea matInput formControlName="interests" rows="3" placeholder="Technology, Sports, Music..."></textarea>
+        <mat-icon matPrefix>interests</mat-icon>
+      </mat-form-field>
+
+      <!-- Marketing Opt-In -->
+      <div class="checkbox-container">
+        <mat-checkbox formControlName="marketingOptIn" color="primary">
+          <span class="checkbox-label">
+            <mat-icon>mail_outline</mat-icon>
+            Subscribe to marketing emails and newsletters
+          </span>
+        </mat-checkbox>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">
+      <mat-icon>close</mat-icon>
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()" 
+      [disabled]="clientForm.invalid || loading"
+      type="submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Update Client' : 'Add Client' }}
+    </button>
+  </mat-dialog-actions>
+
+</div>

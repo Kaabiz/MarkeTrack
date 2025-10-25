@@ -1,246 +1,293 @@
 <div class="clients-container">
   
-  <!-- Header Section -->
-  <div class="page-header">
-    <div class="header-content">
-      <div class="icon-wrapper">
-        <mat-icon class="header-icon">groups</mat-icon>
-      </div>
-      <div class="header-text">
-        <h1>Clients Management</h1>
-        <p class="subtitle">Manage your customer database</p>
-      </div>
+  <!-- Header Section (Matching Dashboard) -->
+  <div class="header">
+    <h1>Client Management</h1>
+    <div class="header-actions">
+      <button mat-icon-button class="refresh-button" (click)="loadClients()" title="Refresh data" [disabled]="loading">
+        <mat-icon [class.rotating]="loading">refresh</mat-icon>
+      </button>
+      <button mat-raised-button color="primary" class="add-button" (click)="openAddClientDialog()">
+        <mat-icon>person_add</mat-icon>
+        Add New Client
+      </button>
     </div>
-    <button mat-raised-button color="primary" class="add-button" (click)="openAddClientDialog()">
-      <mat-icon>person_add</mat-icon>
-      Add New Client
-    </button>
   </div>
 
-  <!-- Statistics Cards -->
-  <div class="stats-grid">
-    <mat-card class="stat-card total-card">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.total }}</span>
+  <!-- Statistics Cards (Matching Dashboard Style) -->
+  <div class="stats-cards">
+    <mat-card>
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">people</mat-icon>
           <span class="stat-label">Total Clients</span>
         </div>
-      </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.total }}</div>
+          <div class="stat-trend trend-up" *ngIf="stats.total > 0">
+            <mat-icon>trending_up</mat-icon>
+            <span>+{{ stats.total }} total</span>
+          </div>
+        </div>
+      </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card male-card">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>male</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.male }}</span>
+    <mat-card>
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">male</mat-icon>
           <span class="stat-label">Male Clients</span>
         </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.male }}</div>
+          <div class="stat-trend trend-up">
+            <mat-icon>pie_chart</mat-icon>
+            <span>{{ getMalePercentage() | number:'1.0-0' }}% of total</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" [style.width.%]="getMalePercentage()"></div>
       </div>
     </mat-card>
 
-    <mat-card class="stat-card female-card">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>female</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.female }}</span>
+    <mat-card>
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">female</mat-icon>
           <span class="stat-label">Female Clients</span>
         </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.female }}</div>
+          <div class="stat-trend" [ngClass]="stats.female > 0 ? 'trend-up' : 'trend-neutral'">
+            <mat-icon>{{ stats.female > 0 ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{ getFemalePercentage() | number:'1.0-0' }}% of total</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <div class="stat-progress">
+        <div class="stat-progress-bar" [style.width.%]="getFemalePercentage()"></div>
       </div>
     </mat-card>
 
-    <mat-card class="stat-card age-card">
-      <div class="stat-content">
-        <div class="stat-icon">
-          <mat-icon>cake</mat-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.avgAge }}</span>
+    <mat-card>
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon">cake</mat-icon>
           <span class="stat-label">Average Age</span>
         </div>
-      </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.avgAge }}</div>
+          <div class="stat-trend trend-neutral">
+            <mat-icon>analytics</mat-icon>
+            <span>years old</span>
+          </div>
+        </div>
+      </mat-card-content>
     </mat-card>
   </div>
 
-  <!-- Search and Filter Section -->
-  <mat-card class="search-card">
-    <div class="search-container">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search clients</mat-label>
+  <!-- Client Overview Section -->
+  <div class="client-section">
+    <h2>Client Overview</h2>
+    
+    <!-- Enhanced Search & Filter Bar (Matching Dashboard) -->
+    <div class="controls-container">
+      <!-- Search with clear button -->
+      <div class="search-container" [class.active]="searchQuery">
+        <mat-icon>search</mat-icon>
         <input 
-          matInput 
-          [(ngModel)]="searchQuery" 
-          (ngModelChange)="applyFilter()"
-          placeholder="Search by name, email, occupation, location...">
-        <mat-icon matPrefix>search</mat-icon>
+          type="text" 
+          placeholder="Search clients..." 
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="applyFilter()" 
+          class="search-input"
+        >
         <button 
-          mat-icon-button 
-          matSuffix 
           *ngIf="searchQuery" 
+          mat-icon-button 
+          class="clear-search" 
           (click)="searchQuery=''; applyFilter()">
-          <mat-icon>clear</mat-icon>
+          <mat-icon>close</mat-icon>
         </button>
-      </mat-form-field>
+      </div>
       
-      <div class="results-info">
-        <mat-icon>info</mat-icon>
-        <span>Showing {{ displayedClients.length }} of {{ totalClients }} clients</span>
+      <div class="filter-controls">
+        <!-- Gender filter -->
+        <div class="filter-field-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Gender</mat-label>
+            <mat-select [(ngModel)]="genderFilter" (selectionChange)="applyFilter()">
+              <mat-option value="all">All Genders</mat-option>
+              <mat-option value="Male">Male</mat-option>
+              <mat-option value="Female">Female</mat-option>
+              <mat-option value="Other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button 
+            *ngIf="genderFilter !== 'all'" 
+            mat-icon-button 
+            class="reset-filter"
+            (click)="resetGenderFilter()">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Sort -->
+        <div class="filter-field-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Sort By</mat-label>
+            <mat-select [(ngModel)]="sortBy" (selectionChange)="applySorting()">
+              <mat-option value="">No Sorting</mat-option>
+              <mat-option value="name">Name (A-Z)</mat-option>
+              <mat-option value="name_desc">Name (Z-A)</mat-option>
+              <mat-option value="age">Age (Low-High)</mat-option>
+              <mat-option value="age_desc">Age (High-Low)</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button 
+            *ngIf="sortBy" 
+            mat-icon-button 
+            class="reset-filter" 
+            (click)="resetSort()">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Reset all filters -->
+        <button 
+          mat-stroked-button 
+          class="reset-all-button" 
+          [disabled]="!hasActiveFilters()" 
+          (click)="resetAllFilters()">
+          <mat-icon>restart_alt</mat-icon>
+          Reset
+        </button>
       </div>
     </div>
-  </mat-card>
-
-  <!-- Clients Table -->
-  <mat-card class="table-card">
-    <div class="table-container" *ngIf="!loading; else loadingSpinner">
-      <table mat-table [dataSource]="displayedClients" matSort (matSortChange)="sortData($event)" class="clients-table">
-
-        <!-- ID Column - FIXED -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-          <td mat-cell *matCellDef="let client">
-            <span class="client-id">#{{ client.id }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Name Column - FIXED -->
+    
+    <!-- Active filters display -->
+    <div class="active-filters" *ngIf="hasActiveFilters()">
+      <span class="filter-label">Active filters:</span>
+      <div class="filter-chips">
+        <span class="filter-chip" *ngIf="searchQuery">
+          Search: "{{ searchQuery }}"
+          <mat-icon (click)="searchQuery=''; applyFilter()">close</mat-icon>
+        </span>
+        <span class="filter-chip" *ngIf="genderFilter !== 'all'">
+          Gender: {{ genderFilter }}
+          <mat-icon (click)="resetGenderFilter()">close</mat-icon>
+        </span>
+        <span class="filter-chip" *ngIf="sortBy">
+          Sort: {{ getSortLabel() }}
+          <mat-icon (click)="resetSort()">close</mat-icon>
+        </span>
+      </div>
+    </div>
+    
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    
+    <!-- Clients Table (Matching Dashboard Style) -->
+    <div class="table-container" *ngIf="!loading && displayedClients.length">
+      <table mat-table [dataSource]="displayedClients" class="clients-table">
+        
+        <!-- Name Column -->
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <th mat-header-cell *matHeaderCellDef>Client Name</th>
           <td mat-cell *matCellDef="let client">
             <div class="client-name-cell">
-              <div class="avatar">{{ client.firstName?.charAt(0) }}</div>
-              <span class="name">{{ client.firstName }} {{ client.lastName }}</span>
+              <div class="avatar">{{ client.firstName?.charAt(0) }}{{ client.lastName?.charAt(0) }}</div>
+              <span>{{ client.firstName }} {{ client.lastName }}</span>
             </div>
           </td>
         </ng-container>
 
-        <!-- Email Column - FIXED -->
+        <!-- Email Column -->
         <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-          <td mat-cell *matCellDef="let client">
-            <div class="email-cell">
-              <mat-icon>email</mat-icon>
-              <span>{{ client.email }}</span>
-            </div>
-          </td>
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let client">{{ client.email }}</td>
         </ng-container>
 
-        <!-- Age Column - FIXED -->
+        <!-- Age Column -->
         <ng-container matColumnDef="age">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Age</th>
+          <th mat-header-cell *matHeaderCellDef>Age</th>
           <td mat-cell *matCellDef="let client">
-            <mat-chip class="age-chip" *ngIf="client.age">
-              {{ client.age }}
-            </mat-chip>
-            <span *ngIf="!client.age" class="no-data">-</span>
+            <span *ngIf="client.age">{{ client.age }}</span>
+            <span *ngIf="!client.age" class="no-data">N/A</span>
           </td>
         </ng-container>
 
-        <!-- Gender Column - FIXED -->
+        <!-- Gender Column with Status Indicator Style -->
         <ng-container matColumnDef="gender">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Gender</th>
+          <th mat-header-cell *matHeaderCellDef>Gender</th>
           <td mat-cell *matCellDef="let client">
-            <mat-chip [color]="getGenderColor(client.gender)" *ngIf="client.gender">
-              <mat-icon>{{ getGenderIcon(client.gender) }}</mat-icon>
+            <div *ngIf="client.gender" [ngClass]="'status-indicator gender-' + client.gender.toLowerCase()">
               {{ client.gender }}
-            </mat-chip>
-            <span *ngIf="!client.gender" class="no-data">-</span>
+            </div>
+            <span *ngIf="!client.gender" class="no-data">N/A</span>
           </td>
         </ng-container>
 
-        <!-- Occupation Column - FIXED -->
+        <!-- Occupation Column -->
         <ng-container matColumnDef="occupation">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Occupation</th>
-          <td mat-cell *matCellDef="let client">
-            <div class="occupation-cell" *ngIf="client.occupation">
-              <mat-icon>work</mat-icon>
-              <span>{{ client.occupation }}</span>
-            </div>
-            <span *ngIf="!client.occupation" class="no-data">-</span>
-          </td>
+          <th mat-header-cell *matHeaderCellDef>Occupation</th>
+          <td mat-cell *matCellDef="let client">{{ client.occupation || 'N/A' }}</td>
         </ng-container>
 
-        <!-- Location Column - FIXED -->
+        <!-- Location Column -->
         <ng-container matColumnDef="location">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Location</th>
-          <td mat-cell *matCellDef="let client">
-            <div class="location-cell" *ngIf="client.location">
-              <mat-icon>location_on</mat-icon>
-              <span>{{ client.location }}</span>
-            </div>
-            <span *ngIf="!client.location" class="no-data">-</span>
-          </td>
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let client">{{ client.location || 'N/A' }}</td>
         </ng-container>
 
         <!-- Actions Column -->
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let client">
-            <div class="actions-cell">
-              <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="viewClient(client)">
-                  <mat-icon>visibility</mat-icon>
-                  <span>View Details</span>
-                </button>
-                <button mat-menu-item (click)="openEditClientDialog(client)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Edit</span>
-                </button>
-                <button mat-menu-item (click)="deleteClient(client)" class="delete-action">
-                  <mat-icon>delete</mat-icon>
-                  <span>Delete</span>
-                </button>
-              </mat-menu>
-            </div>
+            <button mat-icon-button title="View Client" (click)="viewClient(client)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button title="Edit Client" (click)="openEditClientDialog(client)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button title="Delete Client" (click)="deleteClient(client)" class="delete-btn">
+              <mat-icon>delete</mat-icon>
+            </button>
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
-
-        <!-- No Data Row -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell no-results" [attr.colspan]="displayedColumns.length">
-            <div class="no-data-message">
-              <mat-icon>search_off</mat-icon>
-              <h3>No clients found</h3>
-              <p *ngIf="searchQuery">Try adjusting your search criteria</p>
-              <p *ngIf="!searchQuery">Start by adding your first client!</p>
-              <button mat-raised-button color="primary" (click)="openAddClientDialog()">
-                <mat-icon>person_add</mat-icon>
-                Add Client
-              </button>
-            </div>
-          </td>
-        </tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </div>
-
-    <!-- Pagination -->
-    <mat-paginator 
-      [length]="totalClients"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="pageSizeOptions"
-      [pageIndex]="pageIndex"
-      (page)="onPageChange($event)"
-      showFirstLastButtons>
-    </mat-paginator>
-  </mat-card>
-
-  <!-- Loading Spinner -->
-  <ng-template #loadingSpinner>
-    <div class="loading-container">
-      <mat-spinner diameter="60"></mat-spinner>
-      <p>Loading clients...</p>
+    
+    <!-- Enhanced Pagination Controls (Matching Dashboard) -->
+    <div class="pagination-container" *ngIf="!loading && filteredClients.length > 0">
+      <div class="pagination-info">
+        Showing {{ (pageIndex * pageSize) + 1 }}-{{ Math.min((pageIndex + 1) * pageSize, totalClients) }} of {{ totalClients }} clients
+      </div>
+      
+      <mat-paginator 
+        [length]="totalClients"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        aria-label="Select page"
+        showFirstLastButtons>
+      </mat-paginator>
     </div>
-  </ng-template>
-
+    
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredClients.length === 0" class="empty-state">
+      <mat-icon>person_off</mat-icon>
+      <p>No clients found. Add your first client to get started!</p>
+      <button mat-raised-button color="primary" (click)="openAddClientDialog()">
+        <mat-icon>person_add</mat-icon>
+        Add Client
+      </button>
+    </div>
+  </div>
 </div>
