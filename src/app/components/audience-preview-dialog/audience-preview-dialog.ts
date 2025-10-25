@@ -91,53 +91,142 @@ import { Client, Page } from '../../models/client';
     </mat-dialog-actions>
   `,
   styles: [`
-    .count-badge {
-      background: #4f46e5;
+    h2[mat-dialog-title] {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 4px 12px;
-      border-radius: 16px;
+      padding: 24px 32px;
+      margin: -24px -24px 24px -24px;
+      border-radius: 16px 16px 0 0;
+      font-size: 24px;
+      font-weight: 700;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .count-badge {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
       font-size: 14px;
-      margin-left: 12px;
+      font-weight: 700;
+      margin-left: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     mat-dialog-content {
       min-height: 300px;
       max-height: 60vh;
       overflow: auto;
+      padding: 24px 32px;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(102, 126, 234, 0.05);
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+      }
     }
 
     .loading-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 200px;
+      min-height: 300px;
     }
 
     .audience-table {
       width: 100%;
       margin-bottom: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+
+      th.mat-header-cell {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 16px;
+      }
+
+      td.mat-cell {
+        color: #334155;
+        padding: 16px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      tr.mat-row {
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        }
+      }
     }
 
     .empty-state {
       text-align: center;
-      padding: 40px;
+      padding: 60px 40px;
       color: #64748b;
 
       mat-icon {
-        font-size: 48px;
-        height: 48px;
-        width: 48px;
-        margin-bottom: 16px;
+        font-size: 64px;
+        height: 64px;
+        width: 64px;
+        margin-bottom: 20px;
+        color: #cbd5e0;
+      }
+
+      p {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
       }
     }
 
-    th.mat-header-cell {
-      font-weight: 600;
-      color: #475569;
+    mat-dialog-actions {
+      padding: 16px 32px;
+      border-top: 2px solid rgba(102, 126, 234, 0.1);
+      margin: 0 -24px -24px -24px;
+
+      button {
+        min-width: 120px;
+        height: 44px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+      }
     }
 
-    td.mat-cell {
-      color: #334155;
+    ::ng-deep .mat-mdc-paginator {
+      background: transparent !important;
+      border-radius: 12px;
+      padding: 8px 0;
     }
   `]
 })
