@@ -3,7 +3,7 @@ import { DashboardComponent } from './components/dashboard.component/dashboard.c
 import { Campaigns } from './components/campaigns/campaigns';
 import { CampaignForm } from './components/campaign-form/campaign-form';
 import { ClientsComponent } from './components/clients/clients';  // ADD THIS LINE
-
+import { Analytics } from './components/analytics/analytics';
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
@@ -11,5 +11,6 @@ export const routes: Routes = [
   { path: 'campaigns/new', component: CampaignForm },
   { path: 'campaigns/edit/:id', component: CampaignForm },
   { path: 'clients', component: ClientsComponent },           // ADD THIS LINE
+    { path: 'analytics',component: Analytics },
   { path: '**', redirectTo: '/dashboard' }
 ];

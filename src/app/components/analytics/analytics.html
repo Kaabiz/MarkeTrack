@@ -1,0 +1,239 @@
+<div class="analytics-container">
+  
+  <!-- Header Section (Matching Dashboard) -->
+  <div class="header">
+    <h1>Analytics & Insights</h1>
+    <div class="header-actions">
+      <button mat-icon-button class="refresh-button" (click)="refreshData()" title="Refresh data" [disabled]="loading">
+        <mat-icon [class.rotating]="loading">refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Analytics Content -->
+  <div *ngIf="!loading && analyticsData" class="analytics-content">
+    
+    <!-- KPI Cards (WITH ANIMATED COUNTERS!) -->
+    <div class="stats-cards">
+      <mat-card class="stat-card-animate">
+        <mat-card-content>
+          <div class="stat-header">
+            <div class="stat-icon-wrapper gradient-green">
+              <mat-icon class="stat-icon">monetization_on</mat-icon>
+            </div>
+            <span class="stat-label">Total Budget</span>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" #budgetCounter>$0</div>
+            <div class="stat-trend trend-up">
+              <mat-icon>trending_up</mat-icon>
+              <span>{{ analyticsData.kpis.totalCampaigns }} campaigns</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card-animate">
+        <mat-card-content>
+          <div class="stat-header">
+            <div class="stat-icon-wrapper gradient-purple">
+              <mat-icon class="stat-icon">people</mat-icon>
+            </div>
+            <span class="stat-label">Total Clients</span>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" #clientsCounter>0</div>
+            <div class="stat-trend trend-up">
+              <mat-icon>person_add</mat-icon>
+              <span>Active database</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card-animate">
+        <mat-card-content>
+          <div class="stat-header">
+            <div class="stat-icon-wrapper gradient-yellow">
+              <mat-icon class="stat-icon">cake</mat-icon>
+            </div>
+            <span class="stat-label">Average Age</span>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" #ageCounter>0</div>
+            <div class="stat-trend trend-neutral">
+              <mat-icon>analytics</mat-icon>
+              <span>years old</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card-animate">
+        <mat-card-content>
+          <div class="stat-header">
+            <div class="stat-icon-wrapper gradient-pink">
+              <mat-icon class="stat-icon">campaign</mat-icon>
+            </div>
+            <span class="stat-label">Active Campaigns</span>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" #activeCampaignsCounter>0</div>
+            <div class="stat-trend" [ngClass]="analyticsData.kpis.activeCampaigns > 0 ? 'trend-up' : 'trend-neutral'">
+              <mat-icon>{{ analyticsData.kpis.activeCampaigns > 0 ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>{{ analyticsData.kpis.totalCampaigns > 0 ? (analyticsData.kpis.activeCampaigns / analyticsData.kpis.totalCampaigns * 100) : 0 | number:'1.0-0' }}% of total</span>
+            </div>
+          </div>
+        </mat-card-content>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" 
+               [style.width.%]="analyticsData.kpis.totalCampaigns > 0 ? (analyticsData.kpis.activeCampaigns / analyticsData.kpis.totalCampaigns * 100) : 0">
+          </div>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      
+      <!-- Campaign Budget Chart -->
+      <mat-card class="chart-card chart-animate">
+        <mat-card-header>
+          <div class="chart-header-wrapper">
+            <mat-icon class="chart-icon">bar_chart</mat-icon>
+            <div>
+              <mat-card-title>Campaign Budget Distribution</mat-card-title>
+              <mat-card-subtitle>Top 5 campaigns by budget allocation</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #budgetChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Client Gender Chart -->
+      <mat-card class="chart-card chart-animate">
+        <mat-card-header>
+          <div class="chart-header-wrapper">
+            <mat-icon class="chart-icon">pie_chart</mat-icon>
+            <div>
+              <mat-card-title>Client Gender Distribution</mat-card-title>
+              <mat-card-subtitle>Gender breakdown of client base</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #genderChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Campaign Status Chart -->
+      <mat-card class="chart-card chart-animate">
+        <mat-card-header>
+          <div class="chart-header-wrapper">
+            <mat-icon class="chart-icon">donut_small</mat-icon>
+            <div>
+              <mat-card-title>Campaign Status Overview</mat-card-title>
+              <mat-card-subtitle>Active, paused, ended, and draft campaigns</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #statusChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Client Location Chart -->
+      <mat-card class="chart-card chart-animate">
+        <mat-card-header>
+          <div class="chart-header-wrapper">
+            <mat-icon class="chart-icon">location_on</mat-icon>
+            <div>
+              <mat-card-title>Top Client Locations</mat-card-title>
+              <mat-card-subtitle>Top 5 locations by client count</mat-card-subtitle>
+            </div>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <canvas #locationChart></canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Top Campaigns Table -->
+    <div class="table-section table-animate">
+      <h2>
+        <mat-icon>emoji_events</mat-icon>
+        Top Performing Campaigns
+      </h2>
+      
+      <div class="table-container">
+        <table mat-table [dataSource]="analyticsData.topCampaigns" class="campaigns-table">
+          
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Campaign Name</th>
+            <td mat-cell *matCellDef="let campaign">
+              <div class="campaign-name">
+                <mat-icon class="campaign-icon">campaign</mat-icon>
+                {{ campaign.campaignName }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Objective Column -->
+          <ng-container matColumnDef="objective">
+            <th mat-header-cell *matHeaderCellDef>Objective</th>
+            <td mat-cell *matCellDef="let campaign">{{ campaign.campaignObjective || 'N/A' }}</td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let campaign">
+              <div [ngClass]="'status-indicator status-' + campaign.campaignStatus?.toLowerCase()">
+                <span class="status-dot"></span>
+                {{ campaign.campaignStatus }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Budget Column -->
+          <ng-container matColumnDef="budget">
+            <th mat-header-cell *matHeaderCellDef>Budget</th>
+            <td mat-cell *matCellDef="let campaign">
+              <strong class="budget-value">${{ campaign.campaignBudget | number:'1.0-0' }}</strong>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row-animate"></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !analyticsData" class="empty-state">
+    <mat-icon>analytics</mat-icon>
+    <p>No analytics data available. Please add campaigns and clients to see insights.</p>
+  </div>
+
+</div>
